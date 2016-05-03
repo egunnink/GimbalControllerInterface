@@ -30,7 +30,7 @@
         {
             this.tabcInputs = new System.Windows.Forms.TabControl();
             this.tabAngles = new System.Windows.Forms.TabPage();
-            this.lblYaw = new System.Windows.Forms.Label();
+            this.lblAngleInputYaw = new System.Windows.Forms.Label();
             this.nudRawYaw = new System.Windows.Forms.NumericUpDown();
             this.lblAngleInputPitch = new System.Windows.Forms.Label();
             this.nudRawPitch = new System.Windows.Forms.NumericUpDown();
@@ -80,12 +80,12 @@
             this.gbAngleOutputs = new System.Windows.Forms.GroupBox();
             this.lblAngleYawUnits = new System.Windows.Forms.Label();
             this.lblAnglePitchUnits = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.lblAnglePitch = new System.Windows.Forms.Label();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.lblAngleOutputPitch = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblAngleOuptut = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabcInputs.SuspendLayout();
             this.tabAngles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRawYaw)).BeginInit();
@@ -106,8 +106,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudTargetX)).BeginInit();
             this.gbAngleInputs.SuspendLayout();
             this.gbAngleOutputs.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             this.SuspendLayout();
             // 
             // tabcInputs
@@ -133,14 +131,14 @@
             this.tabAngles.Text = "Angles";
             this.tabAngles.UseVisualStyleBackColor = true;
             // 
-            // lblYaw
+            // lblAngleInputYaw
             // 
-            this.lblYaw.AutoSize = true;
-            this.lblYaw.Location = new System.Drawing.Point(6, 42);
-            this.lblYaw.Name = "lblYaw";
-            this.lblYaw.Size = new System.Drawing.Size(28, 13);
-            this.lblYaw.TabIndex = 3;
-            this.lblYaw.Text = "Yaw";
+            this.lblAngleInputYaw.AutoSize = true;
+            this.lblAngleInputYaw.Location = new System.Drawing.Point(6, 42);
+            this.lblAngleInputYaw.Name = "lblAngleInputYaw";
+            this.lblAngleInputYaw.Size = new System.Drawing.Size(28, 13);
+            this.lblAngleInputYaw.TabIndex = 3;
+            this.lblAngleInputYaw.Text = "Yaw";
             // 
             // nudRawYaw
             // 
@@ -462,7 +460,7 @@
             // 
             // nudACLat
             // 
-            this.nudACLat.DecimalPlaces = 4;
+            this.nudACLat.DecimalPlaces = 7;
             this.nudACLat.Location = new System.Drawing.Point(34, 26);
             this.nudACLat.Maximum = new decimal(new int[] {
             90,
@@ -480,7 +478,7 @@
             // 
             // nudACLon
             // 
-            this.nudACLon.DecimalPlaces = 4;
+            this.nudACLon.DecimalPlaces = 7;
             this.nudACLon.Location = new System.Drawing.Point(34, 54);
             this.nudACLon.Maximum = new decimal(new int[] {
             180,
@@ -501,7 +499,7 @@
             this.nudACAlt.DecimalPlaces = 2;
             this.nudACAlt.Location = new System.Drawing.Point(34, 80);
             this.nudACAlt.Maximum = new decimal(new int[] {
-            50000,
+            1000000,
             0,
             0,
             0});
@@ -514,7 +512,7 @@
             this.nudTargetAlt.DecimalPlaces = 2;
             this.nudTargetAlt.Location = new System.Drawing.Point(34, 187);
             this.nudTargetAlt.Maximum = new decimal(new int[] {
-            50000,
+            1000000,
             0,
             0,
             0});
@@ -524,7 +522,7 @@
             // 
             // nudTargetLon
             // 
-            this.nudTargetLon.DecimalPlaces = 4;
+            this.nudTargetLon.DecimalPlaces = 7;
             this.nudTargetLon.Location = new System.Drawing.Point(34, 161);
             this.nudTargetLon.Maximum = new decimal(new int[] {
             180,
@@ -542,7 +540,7 @@
             // 
             // nudTargetLat
             // 
-            this.nudTargetLat.DecimalPlaces = 4;
+            this.nudTargetLat.DecimalPlaces = 7;
             this.nudTargetLat.Location = new System.Drawing.Point(34, 133);
             this.nudTargetLat.Maximum = new decimal(new int[] {
             90,
@@ -591,10 +589,15 @@
             this.nudACZ.DecimalPlaces = 2;
             this.nudACZ.Location = new System.Drawing.Point(34, 75);
             this.nudACZ.Maximum = new decimal(new int[] {
-            50000,
+            1000000,
             0,
             0,
             0});
+            this.nudACZ.Minimum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            -2147483648});
             this.nudACZ.Name = "nudACZ";
             this.nudACZ.Size = new System.Drawing.Size(94, 20);
             this.nudACZ.TabIndex = 41;
@@ -604,12 +607,12 @@
             this.nudACY.DecimalPlaces = 2;
             this.nudACY.Location = new System.Drawing.Point(34, 49);
             this.nudACY.Maximum = new decimal(new int[] {
-            180,
+            1000000,
             0,
             0,
             0});
             this.nudACY.Minimum = new decimal(new int[] {
-            180,
+            1000000,
             0,
             0,
             -2147483648});
@@ -622,12 +625,12 @@
             this.nudACX.DecimalPlaces = 2;
             this.nudACX.Location = new System.Drawing.Point(34, 21);
             this.nudACX.Maximum = new decimal(new int[] {
-            90,
+            1000000,
             0,
             0,
             0});
             this.nudACX.Minimum = new decimal(new int[] {
-            90,
+            1000000,
             0,
             0,
             -2147483648});
@@ -640,10 +643,15 @@
             this.nudTargetZ.DecimalPlaces = 2;
             this.nudTargetZ.Location = new System.Drawing.Point(34, 182);
             this.nudTargetZ.Maximum = new decimal(new int[] {
-            50000,
+            1000000,
             0,
             0,
             0});
+            this.nudTargetZ.Minimum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            -2147483648});
             this.nudTargetZ.Name = "nudTargetZ";
             this.nudTargetZ.Size = new System.Drawing.Size(94, 20);
             this.nudTargetZ.TabIndex = 44;
@@ -653,12 +661,12 @@
             this.nudTargetY.DecimalPlaces = 2;
             this.nudTargetY.Location = new System.Drawing.Point(34, 156);
             this.nudTargetY.Maximum = new decimal(new int[] {
-            180,
+            1000000,
             0,
             0,
             0});
             this.nudTargetY.Minimum = new decimal(new int[] {
-            180,
+            1000000,
             0,
             0,
             -2147483648});
@@ -671,12 +679,12 @@
             this.nudTargetX.DecimalPlaces = 2;
             this.nudTargetX.Location = new System.Drawing.Point(34, 128);
             this.nudTargetX.Maximum = new decimal(new int[] {
-            90,
+            1000000,
             0,
             0,
             0});
             this.nudTargetX.Minimum = new decimal(new int[] {
-            90,
+            1000000,
             0,
             0,
             -2147483648});
@@ -688,7 +696,7 @@
             // 
             this.gbAngleInputs.Controls.Add(this.lblAngleYawUnits);
             this.gbAngleInputs.Controls.Add(this.lblAnglePitchUnits);
-            this.gbAngleInputs.Controls.Add(this.lblYaw);
+            this.gbAngleInputs.Controls.Add(this.lblAngleInputYaw);
             this.gbAngleInputs.Controls.Add(this.lblAngleInputPitch);
             this.gbAngleInputs.Controls.Add(this.nudRawYaw);
             this.gbAngleInputs.Controls.Add(this.nudRawPitch);
@@ -701,11 +709,11 @@
             // 
             // gbAngleOutputs
             // 
+            this.gbAngleOutputs.Controls.Add(this.lblAngleOuptut);
+            this.gbAngleOutputs.Controls.Add(this.label5);
+            this.gbAngleOutputs.Controls.Add(this.label1);
             this.gbAngleOutputs.Controls.Add(this.label2);
-            this.gbAngleOutputs.Controls.Add(this.lblAnglePitch);
-            this.gbAngleOutputs.Controls.Add(this.numericUpDown4);
-            this.gbAngleOutputs.Controls.Add(this.label3);
-            this.gbAngleOutputs.Controls.Add(this.numericUpDown3);
+            this.gbAngleOutputs.Controls.Add(this.lblAngleOutputPitch);
             this.gbAngleOutputs.Controls.Add(this.label4);
             this.gbAngleOutputs.Location = new System.Drawing.Point(6, 112);
             this.gbAngleOutputs.Name = "gbAngleOutputs";
@@ -732,24 +740,6 @@
             this.lblAnglePitchUnits.TabIndex = 4;
             this.lblAnglePitchUnits.Text = "deg";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(107, 42);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(25, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "deg";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(107, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(25, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "deg";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -759,43 +749,50 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Yaw";
             // 
-            // lblAnglePitch
+            // lblAngleOutputPitch
             // 
-            this.lblAnglePitch.AutoSize = true;
-            this.lblAnglePitch.Location = new System.Drawing.Point(6, 16);
-            this.lblAnglePitch.Name = "lblAnglePitch";
-            this.lblAnglePitch.Size = new System.Drawing.Size(31, 13);
-            this.lblAnglePitch.TabIndex = 7;
-            this.lblAnglePitch.Text = "Pitch";
+            this.lblAngleOutputPitch.AutoSize = true;
+            this.lblAngleOutputPitch.Location = new System.Drawing.Point(6, 16);
+            this.lblAngleOutputPitch.Name = "lblAngleOutputPitch";
+            this.lblAngleOutputPitch.Size = new System.Drawing.Size(31, 13);
+            this.lblAngleOutputPitch.TabIndex = 7;
+            this.lblAngleOutputPitch.Text = "Pitch";
             // 
-            // numericUpDown3
+            // label1
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(47, 40);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(54, 20);
-            this.numericUpDown3.TabIndex = 8;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(43, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(31, 13);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Pitch";
             // 
-            // numericUpDown4
+            // label2
             // 
-            this.numericUpDown4.Location = new System.Drawing.Point(47, 14);
-            this.numericUpDown4.Maximum = new decimal(new int[] {
-            90,
-            0,
-            0,
-            0});
-            this.numericUpDown4.Minimum = new decimal(new int[] {
-            90,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(54, 20);
-            this.numericUpDown4.TabIndex = 6;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(43, 42);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(28, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Yaw";
+            // 
+            // lblAngleOuptut
+            // 
+            this.lblAngleOuptut.AutoSize = true;
+            this.lblAngleOuptut.Location = new System.Drawing.Point(107, 16);
+            this.lblAngleOuptut.Name = "lblAngleOuptut";
+            this.lblAngleOuptut.Size = new System.Drawing.Size(31, 13);
+            this.lblAngleOuptut.TabIndex = 12;
+            this.lblAngleOuptut.Text = "Pitch";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(107, 42);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(28, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Yaw";
             // 
             // GimbalController
             // 
@@ -840,8 +837,6 @@
             this.gbAngleInputs.PerformLayout();
             this.gbAngleOutputs.ResumeLayout(false);
             this.gbAngleOutputs.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -854,7 +849,7 @@
         private System.Windows.Forms.TabPage tabGeo;
         private System.Windows.Forms.TabPage tabAboslute;
         private System.Windows.Forms.ListBox lbConsole;
-        private System.Windows.Forms.Label lblYaw;
+        private System.Windows.Forms.Label lblAngleInputYaw;
         private System.Windows.Forms.NumericUpDown nudRawYaw;
         private System.Windows.Forms.Label lblAngleInputPitch;
         private System.Windows.Forms.NumericUpDown nudRawPitch;
@@ -901,12 +896,12 @@
         private System.Windows.Forms.GroupBox gbAngleInputs;
         private System.Windows.Forms.Label lblAngleYawUnits;
         private System.Windows.Forms.Label lblAnglePitchUnits;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label lblAnglePitch;
-        private System.Windows.Forms.NumericUpDown numericUpDown4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.Label lblAngleOutputPitch;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblAngleOuptut;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

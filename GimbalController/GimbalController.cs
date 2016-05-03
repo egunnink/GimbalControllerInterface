@@ -217,6 +217,10 @@ namespace GimbalController
                 tLat, tLon, tAlt,
                 tX, tY, tZ);
 
+            // flip our y axis so that north points in the direction of our gimbal
+            acY = -acY;
+            tY = -tY;
+
             // send the cooridnates to relative
             SendAbsolute(acX, acY, acZ, tX, tY, tZ);
         }

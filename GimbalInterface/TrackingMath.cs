@@ -27,20 +27,30 @@ namespace GimbalInterface
             double D = Distance(acX, acY, acZ, tX, tY, tZ);
             double DH = Distance(acX, acY, tX, tY);
 
-            if (D == 0.0 || DH == 0.0)
+            if(DH == 0.0)
             {
-                pitchT = 0.0;
                 yawT = 0.0;
             }
-            yawT = Math.Acos((acY - tY) / DH) * Units.RAD_TO_DEG;
-            if ((acX - tX) > 0)
+            else
             {
-                yawT = 360.0 - yawT;
+                yawT = Math.Acos((acY - tY) / DH) * Units.RAD_TO_DEG;
+                if ((acX - tX) > 0)
+                {
+                    yawT = 360.0 - yawT;
+                }
             }
-            pitchT = Math.Acos(DH / D) * Units.RAD_TO_DEG;
-            if ((acZ - tZ) > 0)
+
+            if (D == 0.0)
             {
-                pitchT = -pitchT;
+                pitchT = 0.0;
+            }
+            else
+            {
+                pitchT = Math.Acos(DH / D) * Units.RAD_TO_DEG;
+                if ((acZ - tZ) > 0)
+                {
+                    pitchT = -pitchT;
+                }
             }
         }
     }
