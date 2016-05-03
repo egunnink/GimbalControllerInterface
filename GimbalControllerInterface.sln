@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GimbalInterface", "GimbalInterface\GimbalInterface.csproj", "{F3128569-5B7D-40F1-8659-AD15341A33CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GimbalController", "GimbalController\GimbalController.csproj", "{094CC0D2-0795-4B31-9BF3-C5B1C13C6E61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3128569-5B7D-40F1-8659-AD15341A33CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3128569-5B7D-40F1-8659-AD15341A33CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3128569-5B7D-40F1-8659-AD15341A33CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3128569-5B7D-40F1-8659-AD15341A33CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094CC0D2-0795-4B31-9BF3-C5B1C13C6E61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094CC0D2-0795-4B31-9BF3-C5B1C13C6E61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094CC0D2-0795-4B31-9BF3-C5B1C13C6E61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094CC0D2-0795-4B31-9BF3-C5B1C13C6E61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
