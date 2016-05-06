@@ -109,10 +109,10 @@ namespace GimbalInterface
             double SLON = Math.Sin(lon);
             double CLAT = Math.Cos(lat);
             double CLON = Math.Cos(lon);
-            double N = A / Math.Sqrt(1.0 - E2 * SLAT * SLON);
+            double N = A / Math.Sqrt(1.0 - E2 * SLAT * SLAT);
             x = (N + alt) * CLAT * CLON;
             y = (N + alt) * CLAT * SLON;
-            z = (N * (1.0 - E2) + alt) + SLAT;
+            z = (N * (1.0 - E2) + alt) * SLAT;
         }
 
         /// <summary>

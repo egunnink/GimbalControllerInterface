@@ -24,17 +24,117 @@ namespace GimbalController
         private DateTime _lastSendTime = DateTime.Now;
         private GimbalProtocol _gimbal;
 
+        private double AnglePitch { get { return (double)nudAnglePitch.Value; } }
+        private double AngleYaw { get { return (double)nudAngleYaw.Value; } }
+
+        private double ACX { get { return (double)nudACX.Value; } }
+        private double ACY { get { return (double)nudACY.Value; } }
+        private double ACZ { get { return (double)nudACZ.Value; } }
+        private double TargetX { get { return (double)nudTargetX.Value; } }
+        private double TargetY { get { return (double)nudTargetY.Value; } }
+        private double TargetZ { get { return (double)nudTargetZ.Value; } }
+
+        private double ACLat { get { return (double)nudACLat.Value; } }
+        private double ACLon { get { return (double)nudACLon.Value; } }
+        private double ACAlt { get { return (double)nudACAlt.Value; } }
+        private double TargetLat { get { return (double)nudTargetLat.Value; } }
+        private double TargetLon { get { return (double)nudTargetLon.Value; } }
+        private double TargetAlt { get { return (double)nudTargetAlt.Value; } }
+
+        private BindingList<TrackerLocation> _trackerLcoations;
+
         public GimbalController()
         {
             InitializeComponent();
             // if we need to validate again:
             // http://stackoverflow.com/questions/463299/how-do-i-make-a-textbox-that-only-accepts-numbers
             FormClosing += GimbalController_FormClosing;
+            // add output update events
+            nudAnglePitch.ValueChanged += (s, e) => { UpdateAngleOutputs(); };
+            nudAngleYaw.ValueChanged += (s, e) => { UpdateAngleOutputs(); };
+            // add absolute update events
+            nudACX.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            nudACY.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            nudACZ.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            nudTargetX.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            nudTargetY.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            nudTargetZ.ValueChanged += (s, e) => { UpdateAbsoluteOutputs(); };
+            // add geo update
+            nudACLat.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            nudACLon.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            nudACAlt.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            nudTargetLat.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            nudTargetLon.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            nudTargetAlt.ValueChanged += (s, e) => { UpdateGeoOutputs(); };
+            // init our tracker dgv
+            _trackerLcoations = new BindingList<TrackerLocation>();
+            for(int i = 0; i < 5; i++)
+            {
+                _trackerLcoations.Add(new TrackerLocation
+                {
+                    Name = "NAME_" + i,
+                    Lat = 1.5 * i,
+                    Lon = 2.5 * i,
+                    Alt = 3.5 * i
+                });
+            }
+        }
+
+        private void UpdateAngleOutputs()
+        {
+            lblAngleOutputPitchValue.Text = AnglePitch.ToString("0.00");
+            lblAngleOutputYawValue.Text = AngleYaw.ToString("0.00");
+        }
+
+        private void UpdateAbsoluteOutputs()
+        {
+            double pitch, yaw;
+            TrackingMath.TrackToTarget(ACX, ACY, ACZ, TargetX, TargetY, TargetZ, out pitch, out yaw);
+            lblAbsoluteOutputPitchValue.Text = pitch.ToString("0.00");
+            lblAbsoluteOutputYawValue.Text = yaw.ToString("0.00");
+        }
+
+        private void UpdateGeoOutputs()
+        {
+            // convert our AC to ECEF
+            double acX, acY, acZ;
+            CoordinateSystems.LLAToECEFDeg(ACLat, ACLon, ACAlt, out acX, out acY, out acZ);
+            lblGeoOutputACXValue.Text = acX.ToString("0.00");
+            lblGeoOutputACYValue.Text = acY.ToString("0.00");
+            lblGeoOutputACZValue.Text = acZ.ToString("0.00");
+            // convert our target to ECEF
+            double tX, tY, tZ;
+            CoordinateSystems.LLAToECEFDeg(TargetLat, TargetLon, TargetAlt, out tX, out tY, out tZ);
+            lblGeoOutputTargetXValue.Text = tX.ToString("0.00");
+            lblGeoOutputTargetYValue.Text = tY.ToString("0.00");
+            lblGeoOutputTargetZValue.Text = tZ.ToString("0.00");
+
+            // swap the y axis so that north points up
+            acY = -acY;
+            tY = -tY;
+
+            // now convert to pitch and yaw
+            double pitch, yaw;
+            TrackingMath.TrackToTarget(acX, acY, acZ, tX, tY, tZ, out pitch, out yaw);
+            lblGeoOutputPitchValue.Text = pitch.ToString("0.00");
+            lblGeoOutputYawValue.Text = yaw.ToString("0.00");
         }
 
         private void GimbalController_Load(object sender, EventArgs e)
         {
             RefreshCommPorts();
+            UpdateAngleOutputs();
+            UpdateAbsoluteOutputs();
+            UpdateGeoOutputs();
+            // setup our dgv
+            dgvTrackerLocations.AutoSize = true;
+            dgvTrackerLocations.AllowDrop = true;
+            dgvTrackerLocations.DataSource = _trackerLcoations;
+            dgvTrackerLocations.MouseMove += dgvTrackerLocations_MouseMove;
+            dgvTrackerLocations.MouseDown += dgvTrackerLocations_MouseDown;
+            dgvTrackerLocations.DragOver += dgvTrackerLocations_DragOver;
+            dgvTrackerLocations.DragDrop += dgvTrackerLocations_DragDrop;
+
         }
 
         private void GimbalController_FormClosing(object sender, FormClosingEventArgs e)
@@ -48,6 +148,75 @@ namespace GimbalController
         private void btnCommPortRefresh_Click(object sender, EventArgs e)
         {
             RefreshCommPorts();
+        }
+
+        private Rectangle _trackerDragHitbox;
+        private int _trackerRowIndexFromMouseDown;
+        private int _trackerRowIndexOfItemUnderMouseToDrop;
+
+        private void dgvTrackerLocations_MouseMove(object sender, MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+            {
+                // If the mouse moves outside the rectangle, start the drag.
+                if (_trackerDragHitbox != Rectangle.Empty &&
+                    !_trackerDragHitbox.Contains(e.X, e.Y))
+                {
+
+                    // Proceed with the drag and drop, passing in the list item.                    
+                    DragDropEffects dropEffect = dgvTrackerLocations.DoDragDrop(
+                    dgvTrackerLocations.Rows[_trackerRowIndexFromMouseDown],
+                    DragDropEffects.Move);
+                }
+            }
+        }
+
+        private void dgvTrackerLocations_MouseDown(object sender, MouseEventArgs e)
+        {
+            // Get the index of the item the mouse is below.
+            _trackerRowIndexFromMouseDown = dgvTrackerLocations.HitTest(e.X, e.Y).RowIndex;
+            if (_trackerRowIndexFromMouseDown != -1)
+            {
+                // Remember the point where the mouse down occurred. 
+                // The DragSize indicates the size that the mouse can move 
+                // before a drag event should be started.                
+                Size dragSize = SystemInformation.DragSize;
+
+                // Create a rectangle using the DragSize, with the mouse position being
+                // at the center of the rectangle.
+                _trackerDragHitbox = new Rectangle(new Point(e.X - (dragSize.Width / 2),
+                                                               e.Y - (dragSize.Height / 2)),
+                                    dragSize);
+            }
+            else
+                // Reset the rectangle if the mouse is not over an item in the ListBox.
+                _trackerDragHitbox = Rectangle.Empty;
+        }
+
+        private void dgvTrackerLocations_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void dgvTrackerLocations_DragDrop(object sender, DragEventArgs e)
+        {
+            // The mouse locations are relative to the screen, so they must be 
+            // converted to client coordinates.
+            Point clientPoint = dgvTrackerLocations.PointToClient(new Point(e.X, e.Y));
+
+            // Get the row index of the item the mouse is below. 
+            _trackerRowIndexOfItemUnderMouseToDrop =
+                dgvTrackerLocations.HitTest(clientPoint.X, clientPoint.Y).RowIndex;
+
+            // If the drag operation was a move then remove and insert the row.
+            if (e.Effect == DragDropEffects.Move)
+            {
+                DataGridViewRow rowToMove = e.Data.GetData(
+                    typeof(DataGridViewRow)) as DataGridViewRow;
+                dgvTrackerLocations.Rows.RemoveAt(_trackerRowIndexFromMouseDown);
+                dgvTrackerLocations.Rows.Insert(_trackerRowIndexOfItemUnderMouseToDrop, rowToMove);
+
+            }
         }
 
         private void RefreshCommPorts()
@@ -69,7 +238,7 @@ namespace GimbalController
             }
         }
 
-        private void AddToOutput(string line, bool fromGimbal = false)
+        private void AddToConsole(string line, bool fromGimbal = false)
         {
             // adapted from: http://stackoverflow.com/questions/252323/how-do-i-add-a-console-like-element-to-a-c-sharp-winforms-program
             lbConsole.Items.Add((fromGimbal ? "[GIMBAL] " : "[CTRL] ") + line);
@@ -86,9 +255,9 @@ namespace GimbalController
                 lbConsole.SelectedIndex = lbConsole.Items.Count - 1;
             }
         }
-        private void AddToOutput(string format, params object[] args)
+        private void AddToConsole(string format, params object[] args)
         {
-            AddToOutput(String.Format(format, args));
+            AddToConsole(String.Format(format, args));
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -102,31 +271,18 @@ namespace GimbalController
 
             if(tabcInputs.SelectedTab == tabAngles)
             {
-                double pitch = (double)nudRawPitch.Value;
-                double yaw = (double)nudRawYaw.Value;
-                SendAngles(pitch, yaw);
+                SendAngles( AnglePitch,
+                            AngleYaw);
             }
             else if (tabcInputs.SelectedTab == tabAboslute)
             {
-                // these tryparses should really never fail because we validate our inputs but just to be
-                double acX = (double)nudACX.Value;
-                double acY = (double)nudACY.Value;
-                double acZ = (double)nudACZ.Value;
-                double tX = (double)nudTargetX.Value;
-                double tY = (double)nudTargetY.Value;
-                double tZ = (double)nudTargetZ.Value;
-                SendAbsolute(acX, acY, acZ, tX, tY, tZ);
+                SendAbsolute(ACX, ACY, ACZ, 
+                             TargetX, TargetY, TargetZ);
             }
             else if(tabcInputs.SelectedTab == tabGeo)
             {
-                // but just to be sure
-                double acLat = (double)nudACLat.Value;
-                double acLon = (double)nudACLon.Value;
-                double acAlt = (double)nudACAlt.Value;
-                double tLat = (double)nudTargetLat.Value;
-                double tLon = (double)nudTargetLon.Value;
-                double tAlt = (double)nudTargetAlt.Value;
-                SendGeo(acLat, acLon, acAlt, tLat, tLon, tAlt);
+                SendGeo(ACLat, ACLon, ACAlt,
+                        TargetLat, TargetLon, TargetAlt);
             }
             // TODO maybe error this should never happen though
         }
@@ -172,7 +328,7 @@ namespace GimbalController
         {
             // should already be validated but just to be sure
             ValidatePY(ref pitch, ref yaw);
-            AddToOutput("Sent Angles: ({0:0.00}, {1:0.00})", pitch, yaw);
+            AddToConsole("Sent Angles: ({0:0.00}, {1:0.00})", pitch, yaw);
             SetAngles(pitch, yaw);
         }
 
@@ -181,7 +337,7 @@ namespace GimbalController
             // convert our AC and target coordinate to absolute coordiantes
             double pitch, yaw;
             TrackingMath.TrackToTarget(acX, acY, acZ, tX, tY, tZ, out pitch, out yaw);
-            AddToOutput("Convert Abs To Angles: (({0:0.00}, {1:0.00}, {2:0.00}), ({3:0.00}, {4:0.00}, {5:0.00})) -> ({6:0.00}, {7:0.00})",
+            AddToConsole("Convert Abs To Angles: (({0:0.00}, {1:0.00}, {2:0.00}), ({3:0.00}, {4:0.00}, {5:0.00})) -> ({6:0.00}, {7:0.00})",
                 acX, acY, acZ,
                 tX, tY, tZ,
                 pitch, yaw);
@@ -206,14 +362,14 @@ namespace GimbalController
             // convert our AC to ECEF
             double acX, acY, acZ;
             CoordinateSystems.LLAToECEFDeg(acLat, acLon, acAlt, out acX, out acY, out acZ);
-            AddToOutput("Convert Geo AC To Abs: ({0:0.0000}, {1:0.0000}, {2:0.00}) -> ({3:0.00}, {4:0.00}, {5:0.00})",
+            AddToConsole("Convert Geo AC To Abs: ({0:0.0000}, {1:0.0000}, {2:0.00}) -> ({3:0.00}, {4:0.00}, {5:0.00})",
                 acLat, acLon, acAlt,
                 acX, acY, acZ);
 
             // convert our target to ECEF
             double tX, tY, tZ;
             CoordinateSystems.LLAToECEFDeg(tLat, tLon, tAlt, out tX, out tY, out tZ);
-            AddToOutput("Convert Geo Target To Abs: ({0:0.0000}, {1:0.0000}, {2:0.00}) -> ({3:0.00}, {4:0.00}, {5:0.00})",
+            AddToConsole("Convert Geo Target To Abs: ({0:0.0000}, {1:0.0000}, {2:0.00}) -> ({3:0.00}, {4:0.00}, {5:0.00})",
                 tLat, tLon, tAlt,
                 tX, tY, tZ);
 
@@ -230,7 +386,7 @@ namespace GimbalController
             if (_port != null)
             {
                 // its much cleaner and safer to dispose and create a new serial port
-                AddToOutput("Closed Serial Port");
+                AddToConsole("Closed Serial Port");
                 try
                 {
                     _port.Dispose();
@@ -263,8 +419,8 @@ namespace GimbalController
             {
                 // try to open our port
                 _port.Open();
-                _gimbal = new GimbalProtocol(_port.BaseStream);         
-                AddToOutput("Opened " + _port.PortName);
+                _gimbal = new GimbalProtocol(_port.BaseStream);
+                AddToConsole("Opened " + _port.PortName);
                 btnSend.Enabled = true;
             }
             catch (Exception ex)
@@ -305,13 +461,18 @@ namespace GimbalController
                 string line = port.ReadLine();
                 Invoke(new Action(() =>
                 {
-                    AddToOutput(line, true);
+                    AddToConsole(line, true);
                 }));
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR READING FROM PORT: " + ex);
             }
+        }
+
+        private void btnLauchTracker_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
